@@ -1,0 +1,21 @@
+## Ben Archuleta
+## Apache Spark On-The-Fly Example
+## Copyright (c) 2014 The Center for Advanced Research Computing
+## at The University of New Mexico
+#PBS -lnodes=17:ppn=2
+#PBS -lwalltime=10:00:00
+## Specify the shell to be bash
+#PBS -S /bin/bash
+
+##Source and load the correct modules file
+source /etc/profile.d/modules.sh
+
+## Source "ultron" shell script to add Apache stuff to PATH and set other Variables
+source /users/$USER/ultron.sh
+
+DT=$(date +%Y%m%d%H%M)
+cat $PBS_NODEFILE| sort| uniq > $PBS_O_WORKDIR/nodes-$DT
+
+for i in $(cat $PBS_O_WORKDIR/nodes-$DT); do ssh $i "source /users/barchu02/ultron.sh; start-slave.sh spark://metropolis:7077"; done
+sleep 3600
+for i in $(cat $PBS_O_WORKDIR/nodes-$DT); do ssh $i "source /users/barchu02/ultron.sh; stop-slave.sh"; done
