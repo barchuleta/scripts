@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Author Ben J. Archuleta
+# Email: Ben@benarchuleta.com
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -18,15 +20,19 @@ echo -e "WARNING: This will effect all Jobs relating to this user\n"
 
 read user
 
-echo -e "Enter the new walltime (HH:MM:SS)and press enter\n"
+echo -e "Enter the new walltime (HH:MM:SS) and press enter\n"
 read walltime
 
 jobs=$(qstat | grep $user | awk '{print $1}' | awk -F. '{print $1}')
-echo $jobs
 
-if test -z "$jobs"; then
-	echo -e "No jobs found \n"
+if [[ -n "$variable" ]]; then
+	echo -e "No jobs found for this user"
 	exit 0;
 fi
-sudo qalter -lwalltime=$walltime $jobs
 
+echo -e "Jobs are: $jobs"
+
+sleep 5
+
+sudo qalter -lwalltime=$walltime $jobs
+exit 0;
