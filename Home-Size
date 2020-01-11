@@ -1,0 +1,18 @@
+#!/bin/bash
+
+export DATE=$(date +%F)
+for i in {0..5}
+do
+  export HOME=home$i
+  echo -e "Math: Daily report for $HOME $DATE!" >> /root/diskUsage/fs1.$HOME.$DATE.txt
+  echo -e "\n" >> /root/diskUsage/fs1.$HOME.$DATE.txt
+  df -h  >> /root/diskUsage/fs1.$HOME.$DATE.txt
+  echo -e "\n" >> /root/diskUsage/fs1.$HOME.$DATE.txt
+    for e in $(ls /export/$HOME/);
+    do
+      long_size=$(du -s /export/$HOME/"$e" | awk '{print $1}')
+      size=$(du -hs /export/$HOME/"$e")
+      echo $long_size, $size >> /root/diskUsage/fs1.$HOME.$DATE.txt
+    done
+    cat /root/diskUsage/fs1.$HOME.$DATE.txt | mail -s "Math: FS1 Usage for $HOME $DATE" help@math.unm.edu
+done

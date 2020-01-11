@@ -1,0 +1,37 @@
+#!/bin/bash
+
+DATE=$(date +%F-%I.%M.%S)
+LOG=/root/log/update.log
+mkdir -p /root/log
+echo -e "$DATE - Starting auto update" >> $LOG 
+
+system_update () {
+    apt-get update;
+    apt-get upgrade -y 2>&1 | /usr/bin/logger -t AUTO-UPGRADE;
+    apt-get dist-upgrade -y 2>&1 | /usr/bin/logger -t DIST-UPGRADE;
+    apt-get autoremove -y 2>&1 | /usr/bin/logger -t AUTO-REMOVE;
+    apt-get autoclean;
+    apt-get clean;
+}
+
+install_ntpdate () {
+    if ! [ -x "$(command -v ntpdate)" ]; then
+    echo -e "CHECKING FOR NTPDATE"
+    apt-get install -y ntpdate;
+    fi
+}
+
+time_update () {
+    echo -e "UPDATING THE TIME"
+    ntpdate -s ns1.unm.edu
+}
+
+
+system_update
+install_ntpdate 
+time_update 
+
+DATECOM=$(date +%F-%I.%M.%S)
+echo -e "$DATECOM - Completed auto update" >> $LOG 
+exit
+
